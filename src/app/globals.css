@@ -120,3 +120,20 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* 自定义日历标记样式 */
+.day-scheduled {
+  position: relative;
+}
+
+.day-scheduled::after {
+  content: '';
+  position: absolute;
+  bottom: 6px; /* 调整小圆点的位置 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px; /* 小圆点的尺寸 */
+  height: 6px;
+  border-radius: 50%;
+  background-color: #ef4444; /* 一个醒目的红色 (Tailwind red-500) */
+}

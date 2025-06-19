@@ -7,26 +7,37 @@ import { NextResponse } from 'next/server';
 const redis = Redis.fromEnv();
 
 export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const { date, meals } = body;
-
-    if (!date || !meals) {
-      return NextResponse.json({ error: 'Missing date or meals data' }, { status: 400 });
+    try {
+      const body = await request.json();
+      const { date, meals } = body;
+  
+      if (!date || !meals) {
+        return NextResponse.json({ error: 'Missing date or meals data' }, { status: 400 });
+      }
+  
+      const key = `schedule:${date}`;
+  
+      // 核心逻辑修改：检查 meals 是否为空
+      const isEmpty = 
+        !meals.breakfast?.length && 
+        !meals.lunch?.length && 
+        !meals.dinner?.length;
+  
+      if (isEmpty) {
+        // 如果三餐都为空，则从数据库中删除这个 key
+        await redis.del(key);
+        return NextResponse.json({ message: 'Schedule deleted successfully' }, { status: 200 });
+      } else {
+        // 如果不为空，则正常保存
+        await redis.set(key, meals);
+        return NextResponse.json({ message: 'Schedule saved successfully' }, { status: 200 });
+      }
+  
+    } catch (error) {
+      console.error('Failed to save/delete schedule:', error);
+      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
-
-    // 使用 Upstash/Redis 的 set 方法
-    // 它和 @vercel/kv 的 set 用法几乎一样
-    const key = `schedule:${date}`; // 使用冒号作为分隔符是 Redis 的一种常见命名约定
-    await redis.set(key, meals);
-
-    return NextResponse.json({ message: 'Schedule saved successfully' }, { status: 200 });
-
-  } catch (error) {
-    console.error('Failed to save schedule:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
-}
 
 export async function GET(request: Request) {
     try {
