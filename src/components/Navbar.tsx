@@ -10,7 +10,8 @@ export default function Navbar() {
   const navLinks = [
     { href: '/', label: '首页' },
     { href: '/menu', label: '菜单' },
-    { href: '/calendar', label: '日历' }, // <--- 在这里添加新链接
+    { href: '/calendar', label: '日历' }, 
+    { href: '/wishlist', label: '愿望单' }, // <--- 在这里添加新链接
   ];
 
 

@@ -1,11 +1,9 @@
 // src/app/calendar/page.tsx
 import menuData from '@/data/menu.json';
 import CalendarView from '@/components/CalendarView';
+import { getFullMenu } from '@/lib/data'; // 导入新函数
 
-export default function CalendarPage() {
-  // 1. 在服务端安全地加载数据
-  const dishes = menuData;
-
-  // 2. 渲染客户端组件，并将数据作为 prop 传入
+export default async function CalendarPage() { // 改为 async 函数
+  const dishes = await getFullMenu(); // 调用新函数获取数据
   return <CalendarView dishes={dishes} />;
 }

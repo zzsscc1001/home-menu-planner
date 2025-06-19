@@ -1,5 +1,5 @@
 // src/app/menu/page.tsx
-import menuData from '@/data/menu.json'; // @ 是 src/ 的别名，自动配置好了
+import { getFullMenu } from '@/lib/data'; // 导入新函数
 
 // 定义菜品的数据类型，这得益于我们用了 TypeScript
 interface Dish {
@@ -10,9 +10,9 @@ interface Dish {
   tags: string[];
 }
 
-export default function MenuPage() {
+export default async function MenuPage() {
   // 1. 读取并处理数据
-  const dishes: Dish[] = menuData;
+  const dishes = await getFullMenu(); // 调用新函数获取数据
 
   // 2. 按分类对菜品进行分组
   const categorizedDishes = dishes.reduce((acc, dish) => {
