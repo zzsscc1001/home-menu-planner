@@ -9,7 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 
-// 建议为数据定义清晰的接口
+// --- 类型定义区 ---
+
+// 1. 为愿望单中的单个项目定义接口
 interface WishlistItem {
   id: string;
   name: string;
@@ -18,14 +20,32 @@ interface WishlistItem {
   tags: string[];
 }
 
+// 2. 为“添加新项目”表单的状态定义接口（这是解决类型问题的关键）
+interface NewItemState {
+  name: string;
+  recipe: string;
+  category: '菜' | '汤' | '主食';
+  tags: string; // 在表单中，标签是一个用逗号分隔的字符串
+}
+
+
 export default function WishlistView({ initialMenu }: { initialMenu: any[] }) {
+  // --- State Hooks ---
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [newItem, setNewItem] = useState({ name: '', recipe: '', category: '菜' as const, tags: '' });
+  
+  // 3. 使用 NewItemState 接口来初始化 newItem 状态
+  const [newItem, setNewItem] = useState<NewItemState>({
+    name: '',
+    recipe: '',
+    category: '菜',
+    tags: '',
+  });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [operatingItems, setOperatingItems] = useState<Set<string>>(new Set());
 
+  // --- Data Fetching Effect ---
   useEffect(() => {
     fetchWishlist();
   }, []);
@@ -44,12 +64,14 @@ export default function WishlistView({ initialMenu }: { initialMenu: any[] }) {
     }
   };
 
+  // --- Event Handlers ---
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setNewItem(prev => ({ ...prev, [name]: value }));
   };
   
   const handleCategoryChange = (value: '菜' | '汤' | '主食') => {
+    // 现在这里的类型完全匹配，不会再报错
     setNewItem(prev => ({ ...prev, category: value }));
   };
 
@@ -66,14 +88,17 @@ export default function WishlistView({ initialMenu }: { initialMenu: any[] }) {
       const response = await fetch('/api/wishlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...newItem, tags: newItem.tags.split(',').map(t => t.trim()).filter(Boolean) }),
+        body: JSON.stringify({ 
+          ...newItem, 
+          tags: newItem.tags.split(',').map(t => t.trim()).filter(Boolean) 
+        }),
       });
       if (!response.ok) throw new Error('Failed to add item');
       
-      // *** 补全的逻辑 ***
       const addedItem = await response.json();
       setWishlist(prev => [addedItem, ...prev]);
-      setNewItem({ name: '', recipe: '', category: '菜' as const, tags: '' }); // 重置表单
+      // 重置表单为初始状态
+      setNewItem({ name: '', recipe: '', category: '菜', tags: '' });
       toast.success(`"${addedItem.name}" 已添加到愿望单！`);
 
     } catch (error) {
@@ -91,7 +116,6 @@ export default function WishlistView({ initialMenu }: { initialMenu: any[] }) {
       const response = await fetch(`/api/wishlist?id=${item.id}`, { method: 'DELETE' });
       if (!response.ok) throw new Error('Failed to delete item');
       
-      // *** 补全的逻辑 ***
       setWishlist(prev => prev.filter(w => w.id !== item.id));
       toast.success(`"${item.name}" 已从愿望单删除。`);
 
@@ -118,7 +142,6 @@ export default function WishlistView({ initialMenu }: { initialMenu: any[] }) {
       });
       if (!response.ok) throw new Error('Failed to approve item');
       
-      // *** 补全的逻辑 ***
       const approvedDish = await response.json();
       setWishlist(prev => prev.filter(w => w.id !== item.id));
       toast.success(`"${approvedDish.name}" 已批准并加入主菜单！`);
@@ -134,10 +157,12 @@ export default function WishlistView({ initialMenu }: { initialMenu: any[] }) {
     }
   };
 
+  // --- JSX Rendering ---
   return (
     <div>
       <h1 className="text-3xl font-bold tracking-tight mb-8">我的愿望单</h1>
       
+      {/* 添加愿望的表单 */}
       <div className="bg-white p-6 rounded-lg shadow-sm border mb-8">
         <h2 className="text-xl font-semibold mb-4">添加新愿望</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -159,6 +184,7 @@ export default function WishlistView({ initialMenu }: { initialMenu: any[] }) {
         </form>
       </div>
 
+      {/* 愿望单列表 */}
       <div className="space-y-4">
         {isLoading ? (
           <p className="text-center text-gray-500 py-10">正在加载愿望单...</p>
@@ -173,10 +199,12 @@ export default function WishlistView({ initialMenu }: { initialMenu: any[] }) {
                 </div>
                 <div className="flex gap-2 self-end sm:self-center flex-shrink-0">
                   <Button variant="outline" size="sm" onClick={() => handleDelete(item)} disabled={isOperating}>
-                    {isOperating ? <Loader2 className="h-4 w-4 animate-spin" /> : '删除'}
+                    {isOperating && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {isOperating ? '' : '删除'}
                   </Button>
                   <Button size="sm" onClick={() => handleApprove(item)} disabled={isOperating}>
-                    {isOperating ? <Loader2 className="h-4 w-4 animate-spin" /> : '批准'}
+                    {isOperating && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {isOperating ? '' : '批准'}
                   </Button>
                 </div>
               </div>
