@@ -4,8 +4,9 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { DishSelector } from './DishSelector'; // 导入菜品选择器
-import { X } from 'lucide-react'; // 导入 X 图标
+import { DishSelector } from './DishSelector';
+import { X } from 'lucide-react';
+import { toast } from "sonner";
 
 interface Dish {
   id: string;
@@ -28,20 +29,59 @@ interface MealPlannerModalProps {
 }
 
 export default function MealPlannerModal({ isOpen, onClose, selectedDate, dishes }: MealPlannerModalProps) {
-  // 用来存储当前模态框中三餐安排的状态
+  // ==================================================================
+  // 修正：把所有 Hooks 都移到组件的最顶层
+  // ==================================================================
   const [plannedMeals, setPlannedMeals] = useState<PlannedMeals>({
-    breakfast: [],
-    lunch: [],
-    dinner: [],
+      breakfast: [],
+      lunch: [],
+      dinner: [],
   });
-
-  // 当模态框打开时（selectedDate 变化时），重置状态
+  const [isSaving, setIsSaving] = useState(false);
+  
+  // 这个 useEffect 现在有了新的使命：加载数据！
   useEffect(() => {
-    // 在这里，未来可以从数据库加载当天的已有安排
-    setPlannedMeals({ breakfast: [], lunch: [], dinner: [] });
-  }, [selectedDate]);
+    // 只在模态框打开并且有选定日期时执行
+    if (isOpen && selectedDate) {
+      const fetchSchedule = async () => {
+        setIsSaving(true); // 可以复用 isSaving 状态来显示加载中
+        try {
+          const dateKey = formatDateForKey(selectedDate);
+          const response = await fetch(`/api/schedule?date=${dateKey}`);
+          
+          if (!response.ok) {
+            throw new Error('Failed to fetch schedule');
+          }
 
-  if (!selectedDate) return null;
+          const data = await response.json();
+          
+          if (data) {
+            // 如果数据库中有数据，就用它来设置状态
+            setPlannedMeals(data);
+          } else {
+            // 如果没有数据，就重置为空状态
+            setPlannedMeals({ breakfast: [], lunch: [], dinner: [] });
+          }
+
+        } catch (error) {
+          console.error(error);
+          toast.error("加载当天安排失败。");
+          // 即使加载失败，也要保证是一个空状态
+          setPlannedMeals({ breakfast: [], lunch: [], dinner: [] });
+        } finally {
+          setIsSaving(false);
+        }
+      };
+
+      fetchSchedule();
+    }
+  }, [isOpen, selectedDate]); // 依赖项改为 isOpen 和 selectedDate
+  // ==================================================================
+  
+  // 条件返回语句现在位于所有 Hooks 之后
+  if (!selectedDate) {
+      return null; 
+  }
 
   const handleAddDish = (mealType: MealType, dish: Dish) => {
     setPlannedMeals(prev => ({
@@ -60,6 +100,46 @@ export default function MealPlannerModal({ isOpen, onClose, selectedDate, dishes
   const formattedDate = selectedDate.toLocaleDateString('zh-CN', {
     year: 'numeric', month: 'long', day: 'numeric', weekday: 'long',
   });
+
+  // 格式化日期为 YYYY-MM-DD 格式，适合做数据库的 Key
+  const formatDateForKey = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleSave = async () => {
+    if (!selectedDate) return;
+    setIsSaving(true);
+
+    try {
+      const response = await fetch('/api/schedule', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          date: formatDateForKey(selectedDate),
+          meals: plannedMeals,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save the schedule.');
+      }
+
+      // 保存成功
+      toast.success("菜单安排已保存！");
+      onClose(); // 关闭模态框
+
+    } catch (error) {
+      console.error(error);
+      toast.error("保存失败，请稍后再试。");
+    } finally {
+      setIsSaving(false);
+    }
+  };
   
   const MealSection = ({ title, mealType }: { title: string; mealType: MealType }) => (
     <div className="py-4 border-b last:border-b-0">
@@ -97,8 +177,10 @@ export default function MealPlannerModal({ isOpen, onClose, selectedDate, dishes
           <MealSection title="晚餐 🍝" mealType="dinner" />
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>取消</Button>
-          <Button type="submit">保存安排</Button>
+          <Button variant="ghost" onClick={onClose} disabled={isSaving}>取消</Button>
+          <Button onClick={handleSave} disabled={isSaving}>
+            {isSaving ? "保存中..." : "保存安排"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
