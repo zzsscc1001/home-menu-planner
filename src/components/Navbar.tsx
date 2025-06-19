@@ -10,8 +10,9 @@ export default function Navbar() {
   const navLinks = [
     { href: '/', label: '首页' },
     { href: '/menu', label: '菜单' },
-    // 未来在这里添加更多链接...
+    { href: '/calendar', label: '日历' }, // <--- 在这里添加新链接
   ];
+
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-10"> {/* 让导航栏吸顶 */}
