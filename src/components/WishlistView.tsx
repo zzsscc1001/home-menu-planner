@@ -1,4 +1,3 @@
-// src/components/WishlistView.tsx
 'use client';
 
 import { useState, useEffect, FormEvent } from 'react';
@@ -8,19 +7,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import type { WishlistItem } from '@/lib/types'; // 导入我们定义的共享类型
 
 // --- 类型定义区 ---
 
-// 1. 为愿望单中的单个项目定义接口
-interface WishlistItem {
-  id: string;
-  name: string;
-  recipe: string;
-  category: '菜' | '汤' | '主食';
-  tags: string[];
-}
-
-// 2. 为“添加新项目”表单的状态定义接口（这是解决类型问题的关键）
+// 为“添加新项目”表单的状态定义接口
 interface NewItemState {
   name: string;
   recipe: string;
@@ -28,13 +19,12 @@ interface NewItemState {
   tags: string; // 在表单中，标签是一个用逗号分隔的字符串
 }
 
-
-export default function WishlistView({ initialMenu }: { initialMenu: any[] }) {
+// 移除了 initialMenu prop，因为它当前未被使用
+export default function WishlistView() {
   // --- State Hooks ---
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  // 3. 使用 NewItemState 接口来初始化 newItem 状态
   const [newItem, setNewItem] = useState<NewItemState>({
     name: '',
     recipe: '',
@@ -57,7 +47,7 @@ export default function WishlistView({ initialMenu }: { initialMenu: any[] }) {
       if (!response.ok) throw new Error('Network response was not ok');
       const data = await response.json();
       setWishlist(data);
-    } catch (error) {
+    } catch (_error) { // 使用 _error 告诉 ESLint 这个变量是故意未使用的
       toast.error('获取愿望单失败');
     } finally {
       setIsLoading(false);
@@ -71,7 +61,6 @@ export default function WishlistView({ initialMenu }: { initialMenu: any[] }) {
   };
   
   const handleCategoryChange = (value: '菜' | '汤' | '主食') => {
-    // 现在这里的类型完全匹配，不会再报错
     setNewItem(prev => ({ ...prev, category: value }));
   };
 
@@ -101,7 +90,7 @@ export default function WishlistView({ initialMenu }: { initialMenu: any[] }) {
       setNewItem({ name: '', recipe: '', category: '菜', tags: '' });
       toast.success(`"${addedItem.name}" 已添加到愿望单！`);
 
-    } catch (error) {
+    } catch (_error) { // 使用 _error
       toast.error('添加失败');
     } finally {
       setIsSubmitting(false);
@@ -119,7 +108,7 @@ export default function WishlistView({ initialMenu }: { initialMenu: any[] }) {
       setWishlist(prev => prev.filter(w => w.id !== item.id));
       toast.success(`"${item.name}" 已从愿望单删除。`);
 
-    } catch (error) {
+    } catch (_error) { // 使用 _error
       toast.error('删除失败');
     } finally {
       setOperatingItems(prev => {
@@ -146,7 +135,7 @@ export default function WishlistView({ initialMenu }: { initialMenu: any[] }) {
       setWishlist(prev => prev.filter(w => w.id !== item.id));
       toast.success(`"${approvedDish.name}" 已批准并加入主菜单！`);
 
-    } catch (error) {
+    } catch (_error) { // 使用 _error
       toast.error('批准失败');
     } finally {
       setOperatingItems(prev => {

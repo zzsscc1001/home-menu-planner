@@ -1,5 +1,4 @@
 // src/app/calendar/page.tsx
-import menuData from '@/data/menu.json';
 import CalendarView from '@/components/CalendarView';
 import { getFullMenu } from '@/lib/data'; // 导入新函数
 

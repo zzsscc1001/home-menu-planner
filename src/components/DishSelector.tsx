@@ -2,8 +2,9 @@
 'use client';
 
 import * as React from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+// import { Check, ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown } from "lucide-react"; // 修改后: 移除了 Check
+// import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,

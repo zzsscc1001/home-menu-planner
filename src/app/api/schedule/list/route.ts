@@ -1,12 +1,10 @@
 // src/app/api/schedule/list/route.ts
-import { Redis } from '@upstash/redis';
+import { redis } from '@/lib/redis'; // 导入我们统一的客户端
 import { NextResponse } from 'next/server';
-
-const redis = Redis.fromEnv();
+import type { MealSchedule } from '@/lib/types';
 
 export async function GET() {
   try {
-    // ... (scan 逻辑保持不变，获取所有 keys) ...
     const keys: string[] = [];
     let cursor: string = '0';
     do {
@@ -22,7 +20,8 @@ export async function GET() {
     }
 
     // 核心优化：使用 mget 批量获取所有 key 的值
-    const values = await redis.mget<({ breakfast: any[], lunch: any[], dinner: any[] } | null)[]>(...keys);
+    // 使用 MealSchedule 类型代替 any
+    const values = await redis.mget<(MealSchedule | null)[]>(...keys);
 
     const scheduledDates: string[] = [];
     values.forEach((value, index) => {

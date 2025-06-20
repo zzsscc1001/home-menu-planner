@@ -1,25 +1,8 @@
 // src/app/api/wishlist/approve/route.ts
-import { Redis } from '@upstash/redis';
+// src/app/api/wishlist/approve/route.ts
+import { redis } from '@/lib/redis'; // 导入我们统一的客户端
 import { NextResponse } from 'next/server';
-
-const redis = Redis.fromEnv();
-
-interface WishlistItem {
-  id: string;
-  name: string;
-  recipe: string;
-  category: '菜' | '汤' | '主食';
-  tags: string[];
-}
-
-// 我们需要一个主菜单菜品的数据类型
-interface Dish {
-  id: string;
-  name: string;
-  recipe: string;
-  category: '菜' | '汤' | '主食';
-  tags: string[];
-}
+import type { WishlistItem, Dish } from '@/lib/types'; // 导入类型
 
 export async function POST(request: Request) {
   try {

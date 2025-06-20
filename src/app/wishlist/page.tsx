@@ -1,8 +1,8 @@
-import { getFullMenu } from '@/lib/data';
+// src/app/wishlist/page.tsx
+// import { getFullMenu } from '@/lib/data'; // <--- 不再需要
 import WishlistView from '@/components/WishlistView';
 
 export default async function WishlistPage() {
-  // 愿望单页面也可能需要完整的菜单信息，比如检查是否重名
-  const menu = await getFullMenu();
-  return <WishlistView initialMenu={menu} />;
+  // const menu = await getFullMenu(); // <--- 不再需要
+  return <WishlistView />; // <--- 修改这里
 }

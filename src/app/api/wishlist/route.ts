@@ -1,19 +1,8 @@
 // src/app/api/wishlist/route.ts
-import { Redis } from '@upstash/redis';
+import { redis } from '@/lib/redis'; // 导入我们统一的客户端
 import { NextResponse } from 'next/server';
-import { v4 as uuidv4 } from 'uuid'; // 用于生成唯一 ID
-
-const redis = Redis.fromEnv();
-
-// 定义愿望单菜品的数据类型
-interface WishlistItem {
-  id: string;
-  name: string;
-  recipe: string;
-  // 我们可以为愿望单菜品也加上分类和标签，方便批准时直接使用
-  category: '菜' | '汤' | '主食';
-  tags: string[];
-}
+import { v4 as uuidv4 } from 'uuid';
+import type { WishlistItem } from '@/lib/types'; // 导入类型
 
 // GET: 获取所有愿望单项目
 export async function GET() {

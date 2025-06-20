@@ -1,5 +1,5 @@
 // src/app/api/schedule/route.ts
-import { Redis } from '@upstash/redis';
+import { redis } from '@/lib/redis'; // 导入我们统一的客户端
 import { NextResponse } from 'next/server';
 
 // 初始化 Redis 客户端
