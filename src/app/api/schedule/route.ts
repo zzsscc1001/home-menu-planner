@@ -2,10 +2,6 @@
 import { redis } from '@/lib/redis'; // 导入我们统一的客户端
 import { NextResponse } from 'next/server';
 
-// 初始化 Redis 客户端
-// fromEnv() 会自动从你的 .env.development.local 或 Vercel 环境变量中读取连接信息
-const redis = Redis.fromEnv();
-
 export async function POST(request: Request) {
     try {
       const body = await request.json();

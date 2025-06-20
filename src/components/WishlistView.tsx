@@ -1,3 +1,4 @@
+// src/components/WishlistView.tsx
 'use client';
 
 import { useState, useEffect, FormEvent } from 'react';
@@ -7,21 +8,17 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
-import type { WishlistItem } from '@/lib/types'; // 导入我们定义的共享类型
-
-// --- 类型定义区 ---
+import type { WishlistItem } from '@/lib/types';
 
 // 为“添加新项目”表单的状态定义接口
 interface NewItemState {
   name: string;
   recipe: string;
   category: '菜' | '汤' | '主食';
-  tags: string; // 在表单中，标签是一个用逗号分隔的字符串
+  tags: string;
 }
 
-// 移除了 initialMenu prop，因为它当前未被使用
 export default function WishlistView() {
-  // --- State Hooks ---
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -35,7 +32,6 @@ export default function WishlistView() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [operatingItems, setOperatingItems] = useState<Set<string>>(new Set());
 
-  // --- Data Fetching Effect ---
   useEffect(() => {
     fetchWishlist();
   }, []);
@@ -47,14 +43,13 @@ export default function WishlistView() {
       if (!response.ok) throw new Error('Network response was not ok');
       const data = await response.json();
       setWishlist(data);
-    } catch (_error) { // 使用 _error 告诉 ESLint 这个变量是故意未使用的
+    } catch {
       toast.error('获取愿望单失败');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // --- Event Handlers ---
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setNewItem(prev => ({ ...prev, [name]: value }));
@@ -86,11 +81,10 @@ export default function WishlistView() {
       
       const addedItem = await response.json();
       setWishlist(prev => [addedItem, ...prev]);
-      // 重置表单为初始状态
       setNewItem({ name: '', recipe: '', category: '菜', tags: '' });
       toast.success(`"${addedItem.name}" 已添加到愿望单！`);
 
-    } catch (_error) { // 使用 _error
+    } catch {
       toast.error('添加失败');
     } finally {
       setIsSubmitting(false);
@@ -108,7 +102,7 @@ export default function WishlistView() {
       setWishlist(prev => prev.filter(w => w.id !== item.id));
       toast.success(`"${item.name}" 已从愿望单删除。`);
 
-    } catch (_error) { // 使用 _error
+    } catch {
       toast.error('删除失败');
     } finally {
       setOperatingItems(prev => {
@@ -135,7 +129,7 @@ export default function WishlistView() {
       setWishlist(prev => prev.filter(w => w.id !== item.id));
       toast.success(`"${approvedDish.name}" 已批准并加入主菜单！`);
 
-    } catch (_error) { // 使用 _error
+    } catch {
       toast.error('批准失败');
     } finally {
       setOperatingItems(prev => {
@@ -146,12 +140,10 @@ export default function WishlistView() {
     }
   };
 
-  // --- JSX Rendering ---
   return (
     <div>
       <h1 className="text-3xl font-bold tracking-tight mb-8">我的愿望单</h1>
       
-      {/* 添加愿望的表单 */}
       <div className="bg-white p-6 rounded-lg shadow-sm border mb-8">
         <h2 className="text-xl font-semibold mb-4">添加新愿望</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -173,7 +165,6 @@ export default function WishlistView() {
         </form>
       </div>
 
-      {/* 愿望单列表 */}
       <div className="space-y-4">
         {isLoading ? (
           <p className="text-center text-gray-500 py-10">正在加载愿望单...</p>
