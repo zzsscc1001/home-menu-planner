@@ -39,9 +39,12 @@ export default function MenuView({ initialDishes, dynamicDishIds }: MenuViewProp
   };
 
   const handleUpdateDish = (updatedDish: Dish) => {
+    // 更新主列表状态
     setDishes(prevDishes => 
       prevDishes.map(d => d.id === updatedDish.id ? updatedDish : d)
     );
+    // 同时，更新当前选中的菜品状态，这样模态框就会立即收到新的数据并重新渲染
+    setSelectedDish(updatedDish);
   };
 
   const handleDeleteClick = (e: React.MouseEvent, dish: Dish) => {

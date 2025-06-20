@@ -70,7 +70,7 @@ export default function CalendarView({ dishes }: CalendarViewProps) {
   };
 
   return (
-    <div>
+    <div className="w-full">
       {/* ... h1 and p tags ... */}
       
       <div className="flex justify-center bg-white p-4 rounded-lg shadow-sm border">
