@@ -1,10 +1,21 @@
 // src/app/page.tsx
-export default function HomePage() {
-  // 不再需要 <main> 标签
-  return (
-    <>
-      <h1 className="text-2xl font-bold">家庭菜单规划师</h1>
-      <p className="mt-2">欢迎使用！在这里规划你的每一餐。</p>
-    </>
-  );
+import { getFullMenu } from '@/lib/data';
+import HomeView from '@/components/HomeView';
+import type { Dish } from '@/lib/types';
+
+export default async function HomePage() {
+  let initialDish: Dish | null = null;
+  
+  try {
+    const { allDishes } = await getFullMenu();
+    if (allDishes.length > 0) {
+      const randomIndex = Math.floor(Math.random() * allDishes.length);
+      initialDish = allDishes[randomIndex];
+    }
+  } catch (error) {
+    console.error("Failed to fetch initial random dish:", error);
+    // 如果出错，initialDish 保持为 null，前端会处理这个情况
+  }
+
+  return <HomeView initialDish={initialDish} />;
 }
