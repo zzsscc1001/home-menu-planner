@@ -3,9 +3,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar"; // 顶部导航
-import BottomNavbar from "@/components/BottomNavbar"; // 底部导航
-import { Toaster } from "@/components/ui/sonner"; // Toast 通知
+import Navbar from "@/components/Navbar";
+import BottomNavbar from "@/components/BottomNavbar";
+import { Toaster } from "@/components/ui/sonner";
+import PageTransition from "@/components/PageTransition"; // 1. 导入动画组件
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,14 +23,16 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body className={`${inter.className} bg-gray-50`}>
-        <Navbar /> {/* 顶部导航栏，它内部的样式会处理好在移动端的隐藏 */}
+        <Navbar />
         
-        {/* pb-20 是为了给底部的 BottomNavbar 留出空间，防止内容被遮挡 */}
         <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
-          {children}
+          {/* 2. 用 PageTransition 包裹 children */}
+          <PageTransition>
+            {children}
+          </PageTransition>
         </main>
         
-        <BottomNavbar /> {/* 底部导航栏，它内部的样式会处理好在桌面端的隐藏 */}
+        <BottomNavbar />
         <Toaster position="top-center" richColors />
       </body>
     </html>

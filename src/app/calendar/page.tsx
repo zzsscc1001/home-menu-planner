@@ -3,9 +3,16 @@ import CalendarView from '@/components/CalendarView';
 import { getFullMenu } from '@/lib/data';
 
 export default async function CalendarPage() {
-  // 从 getFullMenu 返回的对象中解构出我们需要的 allDishes
   const { allDishes } = await getFullMenu(); 
   
-  // 将菜品数组（现在是 allDishes）传递给 CalendarView
-  return <CalendarView dishes={allDishes} />;
+  return (
+    <div>
+      {/* 将标题和描述放在页面级组件中 */}
+      <h1 className="text-3xl font-bold tracking-tight mb-4">排期日历</h1>
+      <p className="text-gray-600 mb-8">点击一个未来的日期来安排您的三餐吧！</p>
+      
+      {/* CalendarView 现在只负责渲染日历本身 */}
+      <CalendarView dishes={allDishes} />
+    </div>
+  );
 }
