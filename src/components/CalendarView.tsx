@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import { Calendar } from "@/components/ui/calendar";
 import MealPlannerModal from '@/components/MealPlannerModal';
 import type { Dish } from '@/lib/types';
-import { MealSchedule } from '@/lib/types';
 
 interface CalendarViewProps {
   dishes: Dish[];

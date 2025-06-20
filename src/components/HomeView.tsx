@@ -1,7 +1,7 @@
 // src/components/HomeView.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { Dish } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Loader2 } from 'lucide-react';
