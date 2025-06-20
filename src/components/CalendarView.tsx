@@ -73,7 +73,7 @@ export default function CalendarView({ dishes }: CalendarViewProps) {
     <div className="w-full">
       {/* ... h1 and p tags ... */}
       
-      <div className="flex justify-center bg-white p-4 rounded-lg shadow-sm border">
+      <div className="flex justify-center bg-white p-2 sm:p-4 rounded-lg shadow-sm border">
         <Calendar
           mode="single"
           selected={date}

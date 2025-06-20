@@ -66,7 +66,7 @@ export default function DishForm({ initialData, onSubmit, isSubmitting }: DishFo
       </Select>
       <Textarea name="recipe" placeholder="做法 (支持 Markdown)" value={formData.recipe} onChange={handleInputChange} rows={8} required />
       <Input name="tags" placeholder="标签 (用逗号分隔)" value={formData.tags} onChange={handleInputChange} />
-      <Button type="submit" disabled={isSubmitting} className="w-full">
+      <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
         {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {isSubmitting ? '保存中...' : '保存'}
       </Button>
