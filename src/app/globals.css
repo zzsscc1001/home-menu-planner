@@ -137,3 +137,27 @@
   border-radius: 50%;
   background-color: #ef4444; /* 一个醒目的红色 (Tailwind red-500) */
 }
+
+.prose-styles h1, .prose-styles h2, .prose-styles h3 {
+  @apply font-bold mb-4 mt-6 border-b pb-2;
+}
+.prose-styles h1 { @apply text-2xl; }
+.prose-styles h2 { @apply text-xl; }
+.prose-styles h3 { @apply text-lg; }
+.prose-styles p { @apply mb-4 leading-relaxed; }
+.prose-styles ul, .prose-styles ol {
+  @apply list-inside mb-4 pl-4;
+}
+.prose-styles ul { @apply list-disc; }
+.prose-styles ol { @apply list-decimal; }
+.prose-styles li { @apply mb-2; }
+.prose-styles pre {
+  @apply bg-gray-100 dark:bg-gray-800 rounded-md p-4 overflow-x-auto;
+}
+.prose-styles code:not(pre > code) {
+  @apply bg-gray-100 dark:bg-gray-800 rounded-md px-1.5 py-1 font-mono text-sm;
+}
+.prose-styles a { @apply text-blue-600 hover:underline; }
+.prose-styles table { @apply w-full my-4 border-collapse; }
+.prose-styles th, .prose-styles td { @apply border px-4 py-2; }
+.prose-styles th { @apply bg-gray-50 dark:bg-gray-700; }
